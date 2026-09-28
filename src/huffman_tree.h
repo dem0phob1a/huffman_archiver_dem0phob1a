@@ -21,13 +21,13 @@ using FrequencyTable = std::array<std::uint64_t, 256>;
 using CodeTable = std::unordered_map<std::uint8_t, std::string>;
 
 class HuffmanTree {
-public:
+  public:
     explicit HuffmanTree(const FrequencyTable& frequencies);
 
     const CodeTable& codes() const noexcept { return codes_; }
     const Node* root() const noexcept { return root_.get(); }
 
-private:
+  private:
     void build(const FrequencyTable& frequencies);
     void assign_codes(const Node* node, std::string& path);
 
@@ -35,4 +35,4 @@ private:
     CodeTable codes_;
 };
 
-} // namespace huffman
+}  // namespace huffman

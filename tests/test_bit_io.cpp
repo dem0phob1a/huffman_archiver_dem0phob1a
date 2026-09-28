@@ -1,9 +1,9 @@
-#include "bit_io.h"
-
 #include <gtest/gtest.h>
 
 #include <sstream>
 #include <string>
+
+#include "bit_io.h"
 
 TEST(BitWriter, WritesBitsMostSignificantFirstAndPadsOnFlush) {
     std::ostringstream out;

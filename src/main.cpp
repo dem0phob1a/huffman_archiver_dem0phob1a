@@ -13,7 +13,7 @@ void print_usage(const char* prog_name) {
               << "  " << prog_name << " -d <input> <output>\n";
 }
 
-} // namespace
+}  // namespace
 
 int main(int argc, char** argv) {
     if (argc != 4) {

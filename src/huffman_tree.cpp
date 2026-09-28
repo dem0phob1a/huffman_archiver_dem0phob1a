@@ -85,4 +85,4 @@ void HuffmanTree::assign_codes(const Node* node, std::string& path) {
     }
 }
 
-} // namespace huffman
+}  // namespace huffman

@@ -51,7 +51,7 @@ std::uint16_t read_u16(std::istream& in) {
 
 constexpr std::string_view kMagic = "HUF1";
 
-} // namespace
+}  // namespace
 
 void compress(std::istream& input, std::ostream& output) {
     std::string data((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
@@ -141,4 +141,4 @@ void decompress(std::istream& input, std::ostream& output) {
     }
 }
 
-} // namespace huffman
+}  // namespace huffman

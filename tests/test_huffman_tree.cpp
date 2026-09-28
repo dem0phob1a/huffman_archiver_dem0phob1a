@@ -1,10 +1,10 @@
-#include "huffman_tree.h"
-
 #include <gtest/gtest.h>
 
 #include <cstdint>
 #include <initializer_list>
 #include <utility>
+
+#include "huffman_tree.h"
 
 namespace {
 
@@ -17,7 +17,7 @@ huffman::FrequencyTable make_frequencies(
     return table;
 }
 
-} // namespace
+}  // namespace
 
 TEST(HuffmanTree, EmptyInputProducesNoTreeAndNoCodes) {
     huffman::FrequencyTable freq{};
@@ -75,7 +75,8 @@ TEST(HuffmanTree, AverageCodeLengthMatchesTheoreticalOptimum) {
     double total_bits = 0.0;
     for (const auto& [symbol, symbol_freq] : entries) {
         total_freq += symbol_freq;
-        total_bits += static_cast<double>(symbol_freq) * static_cast<double>(codes.at(symbol).size());
+        total_bits +=
+            static_cast<double>(symbol_freq) * static_cast<double>(codes.at(symbol).size());
     }
 
     EXPECT_NEAR(total_bits / static_cast<double>(total_freq), 2.24, 1e-9);

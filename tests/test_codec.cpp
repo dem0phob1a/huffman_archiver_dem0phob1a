@@ -1,9 +1,9 @@
-#include "codec.h"
-
 #include <gtest/gtest.h>
 
 #include <sstream>
 #include <string>
+
+#include "codec.h"
 
 namespace {
 
@@ -18,11 +18,9 @@ std::string round_trip(const std::string& data) {
     return decompressed.str();
 }
 
-} // namespace
+}  // namespace
 
-TEST(Codec, RoundTripEmptyInput) {
-    EXPECT_EQ(round_trip(""), "");
-}
+TEST(Codec, RoundTripEmptyInput) { EXPECT_EQ(round_trip(""), ""); }
 
 TEST(Codec, RoundTripSingleRepeatedByte) {
     std::string data(1000, 'x');

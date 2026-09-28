@@ -47,4 +47,4 @@ bool BitReader::get_bit(bool& bit) {
     return true;
 }
 
-} // namespace huffman
+}  // namespace huffman
