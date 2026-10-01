@@ -70,3 +70,19 @@ TEST(Codec, DecompressRejectsTruncatedHeader) {
     std::ostringstream out;
     EXPECT_THROW(huffman::decompress(bad, out), huffman::FormatError);
 }
+
+TEST(Codec, DecompressRejectsFrequencyTotalMismatch) {
+    std::istringstream original(std::string(10, 'x'));
+    std::ostringstream compressed;
+    huffman::compress(original, compressed);
+
+    std::string malformed = compressed.str();
+    malformed[4] = 1;
+    for (std::size_t i = 5; i < 12; ++i) {
+        malformed[i] = 0;
+    }
+
+    std::istringstream input(malformed);
+    std::ostringstream output;
+    EXPECT_THROW(huffman::decompress(input, output), huffman::FormatError);
+}

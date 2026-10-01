@@ -35,11 +35,16 @@ int BitWriter::flush() {
 
 bool BitReader::get_bit(bool& bit) {
     if (bits_left_ == 0) {
-        int byte = in_.get();
-        if (byte == std::char_traits<char>::eof()) {
-            return false;
+        if (buffer_position_ == buffer_size_) {
+            in_.read(input_buffer_.data(), static_cast<std::streamsize>(input_buffer_.size()));
+            buffer_size_ = static_cast<std::size_t>(in_.gcount());
+            buffer_position_ = 0;
+            if (buffer_size_ == 0) {
+                return false;
+            }
         }
-        buffer_ = static_cast<std::uint8_t>(byte);
+        buffer_ = static_cast<std::uint8_t>(
+            static_cast<unsigned char>(input_buffer_[buffer_position_++]));
         bits_left_ = 8;
     }
     --bits_left_;

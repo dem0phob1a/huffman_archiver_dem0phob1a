@@ -5,14 +5,15 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace huffman {
 
 struct Node {
     std::uint64_t frequency = 0;
     int symbol = -1;
-    std::unique_ptr<Node> left;
-    std::unique_ptr<Node> right;
+    Node* left = nullptr;
+    Node* right = nullptr;
 
     bool is_leaf() const noexcept { return symbol >= 0; }
 };
@@ -25,13 +26,14 @@ class HuffmanTree {
     explicit HuffmanTree(const FrequencyTable& frequencies);
 
     const CodeTable& codes() const noexcept { return codes_; }
-    const Node* root() const noexcept { return root_.get(); }
+    const Node* root() const noexcept { return root_; }
 
   private:
     void build(const FrequencyTable& frequencies);
     void assign_codes(const Node* node, std::string& path);
 
-    std::unique_ptr<Node> root_;
+    std::vector<std::unique_ptr<Node>> nodes_;
+    const Node* root_ = nullptr;
     CodeTable codes_;
 };
 

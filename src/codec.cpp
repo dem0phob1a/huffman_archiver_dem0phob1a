@@ -99,15 +99,30 @@ void decompress(std::istream& input, std::ostream& output) {
 
     std::uint64_t original_size = read_u64(input);
     std::uint16_t distinct = read_u16(input);
+    if (distinct > 256) {
+        throw FormatError("archive has more symbols than the byte alphabet");
+    }
 
     FrequencyTable frequencies{};
+    std::uint64_t frequency_sum = 0;
     for (std::uint16_t i = 0; i < distinct; ++i) {
         int symbol = input.get();
         if (symbol == std::char_traits<char>::eof()) {
             throw FormatError("truncated frequency table");
         }
         std::uint64_t freq = read_u64(input);
-        frequencies[static_cast<unsigned char>(symbol)] = freq;
+        auto& symbol_frequency = frequencies[static_cast<unsigned char>(symbol)];
+        if (freq == 0 || symbol_frequency != 0) {
+            throw FormatError("invalid or duplicate symbol frequency");
+        }
+        if (freq > original_size - frequency_sum) {
+            throw FormatError("symbol frequencies exceed the original size");
+        }
+        frequency_sum += freq;
+        symbol_frequency = freq;
+    }
+    if (frequency_sum != original_size) {
+        throw FormatError("symbol frequencies do not match the original size");
     }
 
     if (original_size == 0) {
@@ -125,7 +140,7 @@ void decompress(std::istream& input, std::ostream& output) {
     std::uint64_t produced = 0;
     bool bit = false;
     while (produced < original_size && reader.get_bit(bit)) {
-        node = bit ? node->right.get() : node->left.get();
+        node = bit ? node->right : node->left;
         if (node == nullptr) {
             throw FormatError("corrupted bitstream: walked off the Huffman tree");
         }

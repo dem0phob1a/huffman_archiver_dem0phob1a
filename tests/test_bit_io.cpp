@@ -75,3 +75,18 @@ TEST(BitReader, ReturnsFalseExactlyAfterLastByteIsConsumed) {
     }
     EXPECT_FALSE(reader.get_bit(bit));
 }
+
+TEST(BitReader, ReadsAcrossInternalBufferBoundaries) {
+    const std::string input_bytes(64 * 1024 + 1, static_cast<char>(0xA5));
+    std::istringstream in(input_bytes);
+    huffman::BitReader reader(in);
+    bool bit = false;
+
+    for (std::size_t byte = 0; byte < input_bytes.size(); ++byte) {
+        for (int bit_index = 0; bit_index < 8; ++bit_index) {
+            ASSERT_TRUE(reader.get_bit(bit));
+            EXPECT_EQ(bit, ((0xA5 >> (7 - bit_index)) & 1) != 0);
+        }
+    }
+    EXPECT_FALSE(reader.get_bit(bit));
+}

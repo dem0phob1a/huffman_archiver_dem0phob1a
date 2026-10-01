@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+#include <cstddef>
 #include <cstdint>
 #include <iosfwd>
 #include <string_view>
@@ -28,6 +30,9 @@ class BitReader {
 
   private:
     std::istream& in_;
+    std::array<char, 64 * 1024> input_buffer_{};
+    std::size_t buffer_size_ = 0;
+    std::size_t buffer_position_ = 0;
     std::uint8_t buffer_ = 0;
     int bits_left_ = 0;
 };

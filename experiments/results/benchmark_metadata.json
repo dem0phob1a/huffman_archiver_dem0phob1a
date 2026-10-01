@@ -1,0 +1,11 @@
+{
+  "executable": "C:\\Users\\dem0phobia\\huffman_archiver_dem0phob1a\\build\\src\\huffman_archiver.exe",
+  "data_directory": "C:\\Users\\dem0phobia\\huffman_archiver_dem0phob1a\\experiments\\data",
+  "runs_per_dataset": 30,
+  "dataset_count": 19,
+  "warmup_runs_per_dataset": 1,
+  "timer": "perf_counter_ns; includes process startup and file I/O",
+  "python": "3.14.8 (tags/v3.14.8:8e6e75d, Sep 30 2026, 18:19:33) [MSC v.1944 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "processor": "AMD64 Family 25 Model 117 Stepping 2, AuthenticAMD"
+}

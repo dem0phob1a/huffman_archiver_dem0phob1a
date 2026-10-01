@@ -1,29 +1,52 @@
 #include "huffman_tree.h"
 
-#include <algorithm>
+#include <queue>
 #include <vector>
 
 namespace huffman {
+
+namespace {
+
+struct QueueEntry {
+    Node* node;
+    std::uint64_t order;
+};
+
+struct QueueEntryCompare {
+    bool operator()(const QueueEntry& left, const QueueEntry& right) const noexcept {
+        if (left.node->frequency != right.node->frequency) {
+            return left.node->frequency > right.node->frequency;
+        }
+        return left.order > right.order;
+    }
+};
+
+}  // namespace
 
 HuffmanTree::HuffmanTree(const FrequencyTable& frequencies) {
     build(frequencies);
     if (root_) {
         std::string path;
-        assign_codes(root_.get(), path);
+        assign_codes(root_, path);
     }
 }
 
 void HuffmanTree::build(const FrequencyTable& frequencies) {
-    std::vector<std::unique_ptr<Node>> forest;
-    forest.reserve(256);
+    std::priority_queue<QueueEntry, std::vector<QueueEntry>, QueueEntryCompare> forest;
+    std::uint64_t order = 0;
+    const auto create_node = [this]() {
+        nodes_.push_back(std::make_unique<Node>());
+        return nodes_.back().get();
+    };
+
     for (int symbol = 0; symbol < 256; ++symbol) {
         if (frequencies[static_cast<std::size_t>(symbol)] == 0) {
             continue;
         }
-        auto leaf = std::make_unique<Node>();
+        Node* leaf = create_node();
         leaf->frequency = frequencies[static_cast<std::size_t>(symbol)];
         leaf->symbol = symbol;
-        forest.push_back(std::move(leaf));
+        forest.push({leaf, order++});
     }
 
     if (forest.empty()) {
@@ -31,41 +54,27 @@ void HuffmanTree::build(const FrequencyTable& frequencies) {
     }
 
     if (forest.size() == 1) {
-        auto parent = std::make_unique<Node>();
-        parent->frequency = forest[0]->frequency;
-        parent->left = std::move(forest[0]);
-        root_ = std::move(parent);
+        Node* parent = create_node();
+        parent->frequency = forest.top().node->frequency;
+        parent->left = forest.top().node;
+        root_ = parent;
         return;
     }
 
     while (forest.size() > 1) {
-        std::size_t first = 0;
-        std::size_t second = 1;
-        if (forest[second]->frequency < forest[first]->frequency) {
-            std::swap(first, second);
-        }
-        for (std::size_t i = 2; i < forest.size(); ++i) {
-            if (forest[i]->frequency < forest[first]->frequency) {
-                second = first;
-                first = i;
-            } else if (forest[i]->frequency < forest[second]->frequency) {
-                second = i;
-            }
-        }
+        Node* left = forest.top().node;
+        forest.pop();
+        Node* right = forest.top().node;
+        forest.pop();
 
-        auto parent = std::make_unique<Node>();
-        parent->frequency = forest[first]->frequency + forest[second]->frequency;
-        parent->left = std::move(forest[first]);
-        parent->right = std::move(forest[second]);
-
-        std::size_t hi = std::max(first, second);
-        std::size_t lo = std::min(first, second);
-        forest.erase(forest.begin() + static_cast<std::ptrdiff_t>(hi));
-        forest.erase(forest.begin() + static_cast<std::ptrdiff_t>(lo));
-        forest.push_back(std::move(parent));
+        Node* parent = create_node();
+        parent->frequency = left->frequency + right->frequency;
+        parent->left = left;
+        parent->right = right;
+        forest.push({parent, order++});
     }
 
-    root_ = std::move(forest.front());
+    root_ = forest.top().node;
 }
 
 void HuffmanTree::assign_codes(const Node* node, std::string& path) {
@@ -75,12 +84,12 @@ void HuffmanTree::assign_codes(const Node* node, std::string& path) {
     }
     if (node->left) {
         path.push_back('0');
-        assign_codes(node->left.get(), path);
+        assign_codes(node->left, path);
         path.pop_back();
     }
     if (node->right) {
         path.push_back('1');
-        assign_codes(node->right.get(), path);
+        assign_codes(node->right, path);
         path.pop_back();
     }
 }

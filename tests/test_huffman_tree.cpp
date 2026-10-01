@@ -33,6 +33,16 @@ TEST(HuffmanTree, SingleSymbolGetsOneBitCode) {
     EXPECT_EQ(tree.codes().at('a'), "0");
 }
 
+TEST(HuffmanTree, EqualFrequenciesHaveDeterministicCodes) {
+    auto freq = make_frequencies({{'a', 1}, {'b', 1}, {'c', 1}, {'d', 1}});
+    huffman::HuffmanTree tree(freq);
+
+    EXPECT_EQ(tree.codes().at('a'), "00");
+    EXPECT_EQ(tree.codes().at('b'), "01");
+    EXPECT_EQ(tree.codes().at('c'), "10");
+    EXPECT_EQ(tree.codes().at('d'), "11");
+}
+
 TEST(HuffmanTree, CodesArePrefixFree) {
     auto freq = make_frequencies({{'a', 45}, {'b', 13}, {'c', 12}, {'d', 16}, {'e', 9}, {'f', 5}});
     huffman::HuffmanTree tree(freq);
